@@ -320,7 +320,43 @@ Para cada caso, os arquivos `evals/golden_report_*.json` registram:
 
 O resumo agrega totais, médias, score, custo médio por chamada e custo médio por caso. O cálculo está implementado para `gpt-5-nano`. Como os preços podem mudar, consulte a [documentação oficial do modelo](https://developers.openai.com/api/docs/models/gpt-5-nano) antes de usar a estimativa em decisões financeiras.
 
+### Estimativa de custo mensal
+
+Foram usados os dois relatórios disponíveis para evitar que a projeção dependa
+de apenas uma execução:
+
+| Execução | Perguntas | Custo total | Custo médio por pergunta |
+|---|---:|---:|---:|
+| Teste 1 | 22 | US$ 0,00868950 | US$ 0,00039498 |
+| Teste 2 | 22 | US$ 0,00805365 | US$ 0,00036608 |
+| **Média dos testes** | **22 por execução** | **US$ 0,00837158** | **US$ 0,00038053** |
+
+Considerando a média combinada de **US$ 0,00038053 por pergunta**, um uso médio de 22
+perguntas por dia e um mês de 30 dias resulta em:
+
+```text
+22 perguntas × 30 dias = 660 perguntas por mês
+660 × US$ 0,00038053 = US$ 0,25115 por mês
+```
+
+| Período | Volume estimado | Custo estimado |
+|---|---:|---:|
+| Dia | 22 perguntas | US$ 0,00837 |
+| Mês | 660 perguntas | US$ 0,25 |
+| Ano | 8.030 perguntas | US$ 3,06 |
+
+Essa projeção usa o comportamento médio de **44 respostas**, somando as duas
+execuções do golden set com `gpt-5-nano`. O custo real pode variar conforme o
+tamanho das perguntas e respostas, tokens internos de raciocínio, quantidade de
+tool calls, retries, aproveitamento de cache e alterações futuras nos preços da
+API.
+
 Veja também o [relatório comparativo](<relatorio_comparativo-DOIS TESTES FEITOS INICIALMENTE.md>) das execuções realizadas.
+
+Relatórios JSON usados no cálculo:
+
+- [Golden report — Teste 1](evals/golden_report_2026-08-15_01-51-07_123456.json)
+- [Golden report — Teste 2](evals/golden_report_2026-08-15_01-55-23_397850.json)
 
 ## Testes locais
 
