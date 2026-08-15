@@ -4,7 +4,9 @@ from pathlib import Path
 from langchain_core.messages import AIMessage
 
 from app.agent.agentRunner import MAX_TOOL_CALLS, AgentRun, AgentRunner
-from evals.run_golden_set import evaluate_case, load_cases
+from datetime import datetime
+
+from evals.run_golden_set import evaluate_case, load_cases, timestamped_report_path
 
 CASES = Path(__file__).resolve().parents[1] / "evals" / "golden_set.json"
 
@@ -95,3 +97,11 @@ def test_evaluator_records_execution_metrics() -> None:
     assert result.cached_input_tokens == 100
     assert result.output_tokens == 200
     assert result.estimated_cost_usd == 0.0001255
+
+
+def test_report_path_contains_execution_date_and_time() -> None:
+    moment = datetime.fromisoformat("2026-08-15T14:30:52.123456-03:00")
+
+    path = timestamped_report_path(moment)
+
+    assert path.name == "golden_report_2026-08-15_14-30-52_123456.json"

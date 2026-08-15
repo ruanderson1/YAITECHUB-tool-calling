@@ -43,7 +43,7 @@ htmlcov/
 *.log
 *.tmp
 *.temp
-evals/golden_report.json
+evals/golden_report*.json
 
 # Editors and operating systems
 .idea/

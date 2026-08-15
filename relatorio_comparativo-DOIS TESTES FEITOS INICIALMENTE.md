@@ -3,7 +3,11 @@
 ## Resumo executivo
 
 Foram realizadas duas execuções do golden set com 22 perguntas contra o agente
-de estoque usando o modelo `gpt-5-nano`. (Foi forma de fazer uma avaliação rápida, e ter algumas métricas, claro que para casos reais precisaria de muito mais  testes.)
+de estoque usando o modelo `gpt-5-nano`. 
+
+### OBS: 
+- Coloquei o golden set como forma de fazer uma avaliação rápida, e ter algumas métricas, claro que para casos reais precisaria de muito mais  testes. Após esses dois testes comparados foram realizados outros que não entraram aqui.
+- Os arquivos dos reports das avaliações ficam salvos para manter o historico de avaliações (apenas o primeiro feito que foi o de 59,1% que não está salvo por ter sido executado antes da mudança de permanencia do historico)
 
 O resultado automático passou de **59,1% para 86,4%**, uma melhoria de **27,3
 pontos percentuais**. O número de casos aprovados aumentou de 13 para 19, enquanto

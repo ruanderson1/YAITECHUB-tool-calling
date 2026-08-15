@@ -276,6 +276,15 @@ python evals/run_golden_set.py
 
 O estoque é restaurado para o seed antes de cada caso, evitando que uma baixa afete a pergunta seguinte.
 
+Cada execução cria um relatório novo com data e hora local no nome, preservando
+o histórico e o trace das rodadas anteriores:
+
+```text
+evals/golden_report_2026-08-15_14-30-52_123456.json
+```
+
+Esses arquivos são ignorados pelo Git e permanecem disponíveis localmente.
+
 > **Atenção:** o reset remove todos os produtos do banco configurado e recria os itens de demonstração. Execute o golden set apenas em desenvolvimento ou teste, nunca em produção.
 
 O comando retorna código diferente de zero abaixo de 80%. Para mudar o limite:
@@ -300,7 +309,7 @@ O score automático é útil para regressão, mas não substitui revisão semân
 
 ## Métricas e custo
 
-Para cada caso, `evals/golden_report.json` registra:
+Para cada caso, os arquivos `evals/golden_report_*.json` registram:
 
 - duração;
 - chamadas ao modelo;

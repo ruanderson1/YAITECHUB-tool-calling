@@ -66,6 +66,11 @@ def reset_inventory() -> None:
         session.add_all(Product(name=n, quantity=q) for n, q in PRODUCTS)
         session.commit()
 
+def timestamped_report_path(now: datetime | None = None) -> Path:
+    moment = now or datetime.now().astimezone()
+    timestamp = moment.strftime("%Y-%m-%d_%H-%M-%S_%f")
+    return ROOT / "evals" / f"golden_report_{timestamp}.json"
+
 def evaluate_case(
     case: dict[str, Any],
     run: AgentRun,
@@ -128,11 +133,16 @@ def evaluate_case(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Avalia o agente com o golden set.")
     parser.add_argument("--cases", type=Path, default=ROOT / "evals" / "golden_set.json")
-    parser.add_argument("--output", type=Path, default=ROOT / "evals" / "golden_report.json")
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Caminho opcional; por padrao, usa um nome unico com data e hora.",
+    )
     parser.add_argument("--fail-under", type=float, default=.80)
     args = parser.parse_args()
     if not 0 <= args.fail_under <= 1:
         parser.error("--fail-under deve estar entre 0 e 1")
+    output_path = args.output or timestamped_report_path()
     cases, settings = load_cases(args.cases), get_settings()
     runner, results = AgentRunner(create_llm(settings.llm_provider, settings.llm_model)), []
     for index, case in enumerate(cases, 1):
@@ -192,9 +202,11 @@ def main() -> int:
         },
         "results": [asdict(r) for r in results],
     }
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\nScore: {score:.1%} ({passed}/{total}). Relatorio: {args.output}")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(f"\nScore: {score:.1%} ({passed}/{total}). Relatorio: {output_path}")
     return 0 if score >= args.fail_under else 1
 
 if __name__ == "__main__":
