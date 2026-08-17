@@ -1,3 +1,5 @@
+"""Ferramentas de estoque expostas ao modelo de linguagem."""
+
 from langchain_core.tools import tool
 
 from app.db.database import SessionLocal
@@ -8,8 +10,8 @@ from app.services.inventory_services import InventoryService
 
 @tool(args_schema=ConsultarEstoqueInput)
 def consultar_estoque(name: str) -> str:
-    """
-    Consulta a quantidade disponível de um produto pelo nome.
+    """Consulta a quantidade disponível de um produto pelo nome.
+
     Use quando o usuário perguntar se um produto está disponível ou
     quantas unidades existem. Não use para realizar baixas.
     """
@@ -21,8 +23,8 @@ def consultar_estoque(name: str) -> str:
 
 @tool(args_schema=BaixarEstoqueInput)
 def baixar_estoque(name: str, quantity: int) -> str:
-    """
-    Retira uma quantidade do estoque de um produto.
+    """Retira uma quantidade do estoque de um produto.
+
     Use somente quando o usuário solicitar explicitamente a retirada
     ou baixa de uma quantidade. Não use apenas para consultas.
     """

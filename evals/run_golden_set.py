@@ -1,4 +1,4 @@
-"""Executa o golden set contra o modelo configurado."""
+"""Executa o golden set e produz um relatório estruturado da avaliação."""
 from __future__ import annotations
 
 import argparse, json, sys, unicodedata
@@ -28,6 +28,8 @@ GPT_5_NANO_PRICING_PER_MILLION = {
 
 @dataclass(frozen=True)
 class CaseResult:
+    """Resultado e métricas observadas durante a execução de um caso."""
+
     id: str
     category: str
     passed: bool
@@ -45,10 +47,17 @@ class CaseResult:
     estimated_cost_usd: float = 0.0
 
 def normalize(value: object) -> str:
+    """Normaliza um valor para comparações sem caixa, acentos ou espaços externos."""
     text = unicodedata.normalize("NFKD", str(value).strip().lower())
     return "".join(c for c in text if not unicodedata.combining(c))
 
 def load_cases(path: Path) -> list[dict[str, Any]]:
+    """Carrega e valida a estrutura mínima do conjunto de avaliação.
+
+    Raises:
+        ValueError: Se o arquivo não contiver casos suficientes, campos
+            obrigatórios ou identificadores únicos.
+    """
     cases = json.loads(path.read_text(encoding="utf-8"))
     required = {"id", "category", "question", "expected_tool"}
     if not isinstance(cases, list) or len(cases) < 20:
@@ -60,6 +69,11 @@ def load_cases(path: Path) -> list[dict[str, Any]]:
     return cases
 
 def reset_inventory() -> None:
+    """Restaura o catálogo de demonstração para isolar cada caso avaliado.
+
+    Esta operação remove todos os produtos da base configurada e, portanto,
+    deve ser usada somente em ambientes de desenvolvimento ou teste.
+    """
     Base.metadata.create_all(bind=engine)
     with SessionLocal() as session:
         session.execute(delete(Product))
@@ -67,6 +81,7 @@ def reset_inventory() -> None:
         session.commit()
 
 def timestamped_report_path(now: datetime | None = None) -> Path:
+    """Gera um caminho de relatório único usando data e hora locais."""
     moment = now or datetime.now().astimezone()
     timestamp = moment.strftime("%Y-%m-%d_%H-%M-%S_%f")
     return ROOT / "evals" / f"golden_report_{timestamp}.json"
@@ -77,6 +92,12 @@ def evaluate_case(
     duration_ms: float = 0.0,
     model: str = "gpt-5-nano",
 ) -> CaseResult:
+    """Compara uma execução com as expectativas e calcula suas métricas.
+
+    A aprovação exige que todas as verificações declaradas pelo caso sejam
+    satisfeitas. O custo só é estimado quando há uma tabela conhecida para o
+    modelo informado.
+    """
     calls = [e for e in run.trace if e["event"] == "tool_call"]
     tools = [e["tool"] for e in calls]
     expected = case["expected_tool"]
@@ -131,6 +152,7 @@ def evaluate_case(
     )
 
 def main() -> int:
+    """Executa todos os casos e retorna sucesso quando o score atinge o limite."""
     parser = argparse.ArgumentParser(description="Avalia o agente com o golden set.")
     parser.add_argument("--cases", type=Path, default=ROOT / "evals" / "golden_set.json")
     parser.add_argument(

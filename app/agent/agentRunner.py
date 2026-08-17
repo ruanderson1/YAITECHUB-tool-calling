@@ -1,4 +1,4 @@
-"""Loop explícito de tool calling do agente."""
+"""Orquestração explícita do ciclo de tool calling do agente."""
 
 from dataclasses import dataclass
 from typing import Any
@@ -16,20 +16,39 @@ MAX_TOOL_CALLS = 5
 
 @dataclass(frozen=True)
 class AgentRun:
+    """Resultado de uma execução acompanhado de eventos para diagnóstico."""
+
     answer: str
     trace: list[dict[str, Any]]
 
 
 class AgentRunner:
+    """Executa o modelo e suas ferramentas até obter uma resposta final.
+
+    O runner limita chamadas de ferramentas e impede que uma baixa idêntica
+    seja repetida durante a mesma solicitação. Cada etapa relevante é incluída
+    no trace retornado por :meth:`run_with_trace`.
+    """
+
     def __init__(self, llm: BaseChatModel) -> None:
+        """Vincula ao modelo apenas as ferramentas autorizadas pela aplicação."""
         self.tools: list[BaseTool] = [consultar_estoque, baixar_estoque]
         self.tools_by_name = {tool.name: tool for tool in self.tools}
         self.llm_with_tools = llm.bind_tools(self.tools)
 
     def run(self, question: str) -> str:
+        """Executa uma solicitação e retorna somente a resposta textual."""
         return self.run_with_trace(question).answer
 
     def run_with_trace(self, question: str) -> AgentRun:
+        """Executa uma solicitação e registra chamadas, resultados e métricas.
+
+        Args:
+            question: Solicitação do usuário em linguagem natural.
+
+        Returns:
+            Resposta final e sequência estruturada de eventos da execução.
+        """
         messages: list[BaseMessage] = AGENT_PROMPT.format_messages(question=question)
         executed_decreases: set[tuple[str, object]] = set()
         model_call_count = 0
@@ -119,6 +138,7 @@ class AgentRunner:
 
     @staticmethod
     def _invoke_tool(tool: BaseTool, arguments: dict[str, object]) -> str:
+        """Executa uma ferramenta e converte qualquer falha em resultado explícito."""
         try:
             result = str(tool.invoke(arguments))
             return result

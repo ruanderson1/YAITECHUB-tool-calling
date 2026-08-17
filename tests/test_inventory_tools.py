@@ -1,1 +1,4 @@
-# NÃO IMPLEMENTADOS PORQUE NÃO ERAM NECESSARIOS PARA ESSE PROJETO DE ESTUDOS
+"""Espaço reservado para testes unitários das ferramentas de estoque.
+
+O comportamento integrado das ferramentas é atualmente coberto pelo golden set.
+"""

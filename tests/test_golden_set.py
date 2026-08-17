@@ -1,11 +1,12 @@
+"""Testes de contrato do conjunto de avaliação e do runner do agente."""
+
 import json
+from datetime import datetime
 from pathlib import Path
 
 from langchain_core.messages import AIMessage
 
 from app.agent.agentRunner import MAX_TOOL_CALLS, AgentRun, AgentRunner
-from datetime import datetime
-
 from evals.run_golden_set import evaluate_case, load_cases, timestamped_report_path
 
 CASES = Path(__file__).resolve().parents[1] / "evals" / "golden_set.json"

@@ -1,3 +1,5 @@
+"""Criação do esquema e carga inicial do estoque de demonstração."""
+
 from sqlalchemy import select
 
 from app.db.database import Base, SessionLocal, engine
@@ -12,6 +14,7 @@ PRODUCTS = (
 
 
 def seed_database() -> None:
+    """Cria as tabelas e insere o catálogo inicial quando o estoque está vazio."""
     Base.metadata.create_all(bind=engine)
 
     with SessionLocal() as session:

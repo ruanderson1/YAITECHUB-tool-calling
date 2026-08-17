@@ -1,1 +1,4 @@
-# NÃO IMPLEMENTADOS PORQUE NÃO ERAM NECESSARIOS PARA ESSE PROJETO DE ESTUDOS, ENTÃO DEIXEI SÓ O GOLDEN SET
+"""Espaço reservado para testes unitários das regras de estoque.
+
+O comportamento integrado do serviço é atualmente coberto pelo golden set.
+"""

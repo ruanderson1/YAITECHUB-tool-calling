@@ -1,3 +1,5 @@
+"""Infraestrutura de persistência SQLite e fábrica de sessões."""
+
 from pathlib import Path
 
 from sqlalchemy import create_engine
@@ -12,4 +14,4 @@ SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
 
 class Base(DeclarativeBase):
-    pass
+    """Classe base dos modelos declarativos da aplicação."""

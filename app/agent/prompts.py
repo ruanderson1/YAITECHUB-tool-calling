@@ -1,3 +1,5 @@
+"""Prompt de sistema e template de entrada do agente de estoque."""
+
 from langchain_core.prompts import ChatPromptTemplate
 
 

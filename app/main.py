@@ -7,6 +7,7 @@ from app.db.seed import seed_database
 
 
 def main() -> None:
+    """Inicializa as dependências e executa a interface interativa do terminal."""
     seed_database()
     settings = get_settings()
     llm = create_llm(settings.llm_provider, settings.llm_model)

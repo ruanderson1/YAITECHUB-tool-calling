@@ -1,4 +1,4 @@
-"""Configuracao do modelo."""
+"""Carregamento e validação das configurações da aplicação."""
 
 import os
 from dataclasses import dataclass
@@ -13,11 +13,18 @@ load_dotenv(ENV_FILE)
 
 @dataclass(frozen=True)
 class Settings:
+    """Configurações imutáveis usadas para construir o modelo de linguagem."""
+
     llm_provider: str
     llm_model: str
 
 
 def get_settings() -> Settings:
+    """Lê as configurações obrigatórias do ambiente.
+
+    Raises:
+        RuntimeError: Se o provedor ou o modelo não estiver configurado.
+    """
     provider = os.getenv("LLM_PROVIDER")
     model = os.getenv("LLM_MODEL")
 
